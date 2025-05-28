@@ -24,7 +24,7 @@ export default function QRCodeGenerator() {
   const [isCopied, setIsCopied] = useState(false);
   const [bgColor, setBgColor] = useState('#FFFFFF');
   const [fgColor, setFgColor] = useState('#000000');
-  const [format, setFormat] = useState<'png' | 'svg'>('png');
+  const [format, setFormat] = useState<'canvas' | 'svg'>('canvas');
   const qrRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -42,7 +42,7 @@ export default function QRCodeGenerator() {
       return;
     }
 
-    if (format === 'png') {
+    if (format === 'canvas') {
       const canvas = qrRef.current?.querySelector('canvas');
       if (!canvas) return;
 
@@ -202,8 +202,8 @@ export default function QRCodeGenerator() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setFormat('png')}
-                className={cn(format === 'png' && "bg-primary text-primary-foreground hover:bg-primary/90")}
+                onClick={() => setFormat('canvas')}
+                className={cn(format === 'canvas' && "bg-primary text-primary-foreground hover:bg-primary/90")}
               >
                 <FileImage className="h-4 w-4" />
               </Button>
