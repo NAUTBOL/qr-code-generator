@@ -35,3 +35,7 @@ npm install
 npm run dev
 npm run build
 ```
+---
+
+## 📄 License
+MIT License. Feel free to use, modify, and share!
