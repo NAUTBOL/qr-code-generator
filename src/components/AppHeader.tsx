@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Moon, Sun, QrCode, Palette as Paypal } from 'lucide-react';
+import { Moon, Sun, QrCode, Heart, LayoutGrid } from 'lucide-react';
 
 export default function AppHeader() {
   const { setTheme } = useTheme();
@@ -27,12 +27,22 @@ export default function AppHeader() {
         <div className="flex items-center space-x-2">
 
           <a
+            href="https://www.kuantyk.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-md bg-[#0070BA] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ea6] transition-colors"
+          >
+            <LayoutGrid size={16} className="mr-1" />
+            More Apps
+          </a>
+
+          <a
             href="https://www.paypal.com/paypalme/NAUTBOL"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center rounded-md bg-[#0070BA] px-3 py-2 text-sm font-medium text-white hover:bg-[#005ea6] transition-colors"
           >
-            <Paypal size={16} className="mr-1" />
+            <Heart size={16} className="mr-1" />
             Donate
           </a>
 
