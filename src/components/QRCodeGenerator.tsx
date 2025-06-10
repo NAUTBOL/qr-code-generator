@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import QRCode from 'qrcode.react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,18 +6,19 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  Download, 
-  Copy, 
-  Check, 
-  ScanLine, 
-  Sparkles, 
+import {
+  Download,
+  Copy,
+  Check,
+  ScanLine,
+  Sparkles,
   Palette,
   FileImage,
   FileCode
 } from 'lucide-react';
 import QRCodeCustomizer from './QRCodeCustomizer';
 import { cn } from '@/lib/utils';
+import { API_URL } from '@/core/config';
 
 export default function QRCodeGenerator() {
   const [text, setText] = useState('');
@@ -27,6 +28,29 @@ export default function QRCodeGenerator() {
   const [format, setFormat] = useState<'canvas' | 'svg'>('canvas');
   const qrRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const [counter, setCounter] = useState(0);
+
+  const fetchCounterData = async () => {
+    const url = API_URL + "counters/total/ip";
+    const response = await fetch(url);
+    if (!response.ok) {
+      setCounter(0);
+    }
+    const data = await response.json();
+    setCounter(data.counter);
+  };
+
+  const formatViews = (num: number) => {
+    return new Intl.NumberFormat('en', {
+      notation: 'compact',
+      compactDisplay: 'short',
+    }).format(num);
+  };
+
+  useEffect(() => {
+    fetchCounterData();
+  }, []);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
@@ -60,7 +84,7 @@ export default function QRCodeGenerator() {
       const svgData = new XMLSerializer().serializeToString(svg);
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       const svgUrl = URL.createObjectURL(svgBlob);
-      
+
       const downloadLink = document.createElement('a');
       downloadLink.href = svgUrl;
       downloadLink.download = `qrcode-${Date.now()}.svg`;
@@ -125,19 +149,19 @@ export default function QRCodeGenerator() {
             Enter text or a URL to generate a QR code in real-time.
           </CardDescription>
         </CardHeader>
-        
+
         <Tabs defaultValue="generate" className="w-full">
           <TabsList className="grid grid-cols-2 mx-6">
             <TabsTrigger value="generate" className="flex items-center gap-1">
-              <Sparkles className="h-4 w-4" /> 
+              <Sparkles className="h-4 w-4" />
               Generate
             </TabsTrigger>
             <TabsTrigger value="customize" className="flex items-center gap-1">
-              <Palette className="h-4 w-4" /> 
+              <Palette className="h-4 w-4" />
               Customize
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="generate" className="p-0">
             <CardContent className="pt-6">
               <div className="space-y-4">
@@ -155,7 +179,7 @@ export default function QRCodeGenerator() {
                       variant="outline"
                       size="icon"
                       className={cn(
-                        "rounded-l-none border-l-0", 
+                        "rounded-l-none border-l-0",
                         isCopied && "text-green-500"
                       )}
                       onClick={copyToClipboard}
@@ -165,11 +189,10 @@ export default function QRCodeGenerator() {
                   </div>
                 </div>
 
-                <div 
-                  ref={qrRef} 
-                  className={`qr-container flex justify-center items-center p-4 transition-all duration-300 ${
-                    text ? 'opacity-100 scale-100' : 'opacity-70 scale-95'
-                  }`}
+                <div
+                  ref={qrRef}
+                  className={`qr-container flex justify-center items-center p-4 transition-all duration-300 ${text ? 'opacity-100 scale-100' : 'opacity-70 scale-95'
+                    }`}
                 >
                   <div className="bg-white p-3 rounded-lg shadow-sm">
                     <QRCode
@@ -187,16 +210,16 @@ export default function QRCodeGenerator() {
               </div>
             </CardContent>
           </TabsContent>
-          
+
           <TabsContent value="customize">
-            <QRCodeCustomizer 
+            <QRCodeCustomizer
               bgColor={bgColor}
               fgColor={fgColor}
               setBgColor={setBgColor}
               setFgColor={setFgColor}
             />
           </TabsContent>
-          
+
           <CardFooter className="flex justify-center gap-4 border-t p-6">
             <div className="flex gap-2">
               <Button
@@ -216,7 +239,7 @@ export default function QRCodeGenerator() {
                 <FileCode className="h-4 w-4" />
               </Button>
             </div>
-            <Button 
+            <Button
               onClick={handleDownload}
               disabled={!text.trim()}
               className="flex items-center gap-2"
@@ -226,12 +249,17 @@ export default function QRCodeGenerator() {
           </CardFooter>
         </Tabs>
       </Card>
-      
+
       <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>
           Scan this QR code with any QR code reader app on your smartphone or tablet.
         </p>
       </div>
+      <p className="text-lg sm:text-xl font-bold">
+        <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          Loved by +{formatViews(counter)}
+        </span>
+      </p>
     </div>
   );
 }
