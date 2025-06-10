@@ -32,7 +32,7 @@ export default function QRCodeGenerator() {
   const [counter, setCounter] = useState(0);
 
   const fetchCounterData = async () => {
-    const url = API_URL + "counters/total/ip";
+    const url = API_URL + "counters/total/qr";
     const response = await fetch(url);
     if (!response.ok) {
       setCounter(0);
